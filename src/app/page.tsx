@@ -1,113 +1,113 @@
-import Image from 'next/image'
+import { HomeSlider } from "@/components/sliders/home-slider";
+import { MovieSlider } from "@/components/sliders/movie-slider";
+import { HomeNavigation } from "@/components/navigations/home-nav";
 
-export default function Home() {
+import { getMovies } from "@/services/tmdb-service";
+import { GENRE_LISTS } from "@/config/tmdb/genre-lists";
+
+export default async function Home() {
+  const popular = await getMovies({ byGenre: null, byQuery: null });
+  const draftPromiseAll = GENRE_LISTS.es.map((g) =>
+    getMovies({ byGenre: g.id.toString(), byQuery: null })
+  );
+
+  const movies = await Promise.all(draftPromiseAll.slice(0, 5));
+  console.log(GENRE_LISTS.es.length);
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+    <>
+      <HomeNavigation />
+      <main className="min-h-screen mb-20">
+        <div className="relative w-full h-[56.5vw] mb-10">
+          <HomeSlider movies={popular.results.slice(0, 5)} />
+
+          <div className="absolute bottom-0 right-0 left-0 z-10 flex items-center justify-center gap-8 bg-blue-600">
+            <span className="text-lg animate-bounce mt-2">👇</span>
+            <a href="" className="text-[16px] font-semibold text-white">
+              Ver mas peliculas
+            </a>
+            <span className="text-lg animate-bounce mt-2">👇</span>
+          </div>
         </div>
-      </div>
 
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px] z-[-1]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
+        {GENRE_LISTS.es.slice(0, 5).map((g, index) => (
+          <section key={g.id} className="flex flex-col px-12 py-6 gap-4">
+            <header>
+              <h2 className="text-3xl font-semibold text-white">{g.name}</h2>
+            </header>
 
-      <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
+            <MovieSlider movies={movies[index].results.slice(0, 10)} />
+          </section>
+        ))}
+      </main>
 
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Learn{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Templates{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Deploy{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  )
+      <footer className="p-16 bg-blue-600"></footer>
+    </>
+  );
 }
+
+/** Notas para la home page (Sabado 11/11/2023 8:17PM)
+ * 
+ * 1 - Encontrar la forma de cargar los sliders poco a poco
+ *  1.1 - Investigar hasta que punto sale rentable el Promise.all
+ *  1.2 - de ser rentable separar la carga de la page
+ *    1.2.1 (propuesta) - cargar en el Promise.all las primeras 5 categorias 
+ * 
+ * 2 - Abstraer el listado de categorias en un client-component
+ *  2.1 (propuesta) - Reutilizar el infinite scroll del search 
+ *  para cargar las primeras 5 categorias.
+      `DESCARTADA` 2.1.1 (propuesta descartada) - al renderizar las cards darle prioridad
+      al primer lote de imagenes de cada slider cargado en el Promise.all
+
+  3 (propuesta) - Reposicionar los elementos de la navegacion de la page
+    3.1 (Jusitificación) seria interesante agregar a la navegacion
+    principal un boton para iniciar sesión, ya que al entrar al
+    buscador se muestra la profile-card para que el usuario
+    pueda acceder a la informacion de su perfil.
+
+    3.2 (Tentativa) - dejar la navegacion tal y como esta
+    y al entrar al buscador, mientras se cargan las peliculas
+    mas populares, podemos comprobar si hay una sesion iniciada
+    de ser el caso el usuario podra acceder a su informacion
+    de perfil y de lo contrario mostrar un boton para 
+    iniciar sesion.
+      3.2.1 (Justificacion) - La aplicacion no necesita con urgencia
+      las credenciales del usuario para colocar un boton de login 
+      al inicio, porque es meramente informativa y solo necesitara
+      iniciar sesion al querer interactuar con los registros.
+ */
+
+/** Propuestas Generales
+ * 1 (propuesta) - Hacer un pequeño tutorial en el buscador,
+ * teniendo en cuenta que se quiere dar una buena impresion
+ * en este proyecto academico y la cantidad de opciones que
+ * se quieren anexar a la app, seria ideal un tutorial opcional
+ * para aquellos usuarios que no tengan como costumbre
+ * descubrir poco a poco las posibilidades que les ofrecen
+ * los productos digitales.
+ *  1.1 (Analisis) - esta idea esta genial, pero alargaria el tiempo
+ *  de desarrollo y puede que la mayoria de opciones y funcionalidades
+ *  se puedan posisionar dentro de la interfaz grafica de tal forma en
+ *  que el usuario con lenguaje visual y con ayuda de los iconos descriptivos
+ *  pueda ir intuyendo cada una de las opciones que les ofrece el producto a
+ *  medida que lo vaya usando.
+ *  1.1.2 (Negativa) - Si el producto estuviese pensado para
+ *  generar ingresos con baja inversion y las peliculas pudiesen
+ *  ser vistas por los usuarios mediante un plan de pago,
+ *  el analisis 1.1 seria bastante asertado, pero esta aplicacion
+ *  solo tiene como proposito demostar mis capacidades tecnicas
+ *  para generar experiencias de usuario minimamente satisfactorias
+ *  y que les genere interes a futuros contratistas o marque la
+ *  diferencia entre los demas proyectos revisados en algun proceso
+ *  de seleccion de nuevo personal. Lo importante es que se pueda
+ *  ver rapidamente todo lo que ofrece el producto y con un tutorial
+ *  no solo me veria obligado a aprender cosas nuevas sino que tambien
+ *  de cierto modo le facilito la revision a cualquier revisor, porque
+ *  asi tiene una amplia vision de lo que quise lograr con mi producto
+ *  y de lo que soy capaz de hacer para que el usuario se sienta de la
+ *  mano en todo momento y que el uso constante de mi producto se vuelva
+ *  algo cotidiano en su dia a dia facilmente, logrando lo que denomino
+ *  "la retencion sana" haciendo que el usuario le guste mi producto e
+ *  incluso pueda "encariñarse" o volverse su alternativa favorita con
+ *  respecto a otros productos de la misma indole.
+ *
+ */
